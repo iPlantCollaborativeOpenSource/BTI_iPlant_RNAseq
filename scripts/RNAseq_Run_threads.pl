@@ -52,6 +52,9 @@ my $help;				## help message
 my $strand='both';		## the strand that reads will be aligned to (default: both strands)
 my $maxpos;				## maximum coordinate of matching position of read along the junction sequence
 
+# Explicit path to bwa
+my $bwa_app = '/usr/local3/bin/bwa';
+
 ######--------------- Get options  ---------------######
 
 GetOptions
@@ -66,10 +69,6 @@ GetOptions
   'w:i'  	=> \$ejwidth,				   
   'help' 	=> \$help,				
 );
-
-
-
-
 
 ######--------------- parsing options ---------------######
 
@@ -258,11 +257,11 @@ sub BWA_genome_align
 	
 	print "\n\n******** Aligning $seq_name against genome: $genome_name  ********\n\n";				
 	if (-e $BWA_SAI_file) { system("rm -f $BWA_SAI_file"); } 									## If old .sai file exists, remove old sai file
-	system("bwa aln -n $max_allowed_error -o $gap_open $fasta_file $seq_file > $BWA_SAI_file");	## use BWA to align sequence file
+	system("$bwa_app aln -n $max_allowed_error -o $gap_open $fasta_file $seq_file > $BWA_SAI_file");	## use BWA to align sequence file
 	
 	print "\n\n******** Converting $BWA_SAI_file into SAM alignment format  ********\n\n";	
 	if (-e $BWA_SAM_file) { system("rm -f $BWA_SAM_file"); }									## If old .sam file exists, remove old sam file
-	system("bwa samse -n $max_multireads $fasta_file $BWA_SAI_file $seq_file > $BWA_SAM_file");	## converting .sai file into .sam file
+	system("$bwa_app samse -n $max_multireads $fasta_file $BWA_SAI_file $seq_file > $BWA_SAM_file");	## converting .sai file into .sam file
 	
 	print "\n\n******** All output files have been saved in: $seq_path   ********\n";
 	
@@ -396,11 +395,11 @@ sub BWA_junc_align
 	
 	print "\n\n******** Aligning $seq_name against genome: $genome_name  ********\n\n";				
 	if (-e $BWA_SAI_file) { system("rm -f $BWA_SAI_file"); } 									## If old .sai file exists, remove old sai file
-	system("bwa aln -n $max_allowed_error -o $gap_open $fasta_file $seq_file > $BWA_SAI_file");	## use BWA to align sequence file
+	system("$bwa_app aln -n $max_allowed_error -o $gap_open $fasta_file $seq_file > $BWA_SAI_file");	## use BWA to align sequence file
 	
 	print "\n\n******** Converting $BWA_SAI_file into SAM alignment format  ********\n\n";	
 	if (-e $BWA_SAM_file) { system("rm -f $BWA_SAM_file"); }									## If old .sam file exists, remove old sam file
-	system("bwa samse -n $max_multireads $fasta_file $BWA_SAI_file $seq_file > $BWA_SAM_file");	## converting .sai file into .sam file
+	system("$bwa_app samse -n $max_multireads $fasta_file $BWA_SAI_file $seq_file > $BWA_SAM_file");	## converting .sai file into .sam file
 	
 	print "\n\n******** All output files have been saved in: $seq_path   ********\n";
 	

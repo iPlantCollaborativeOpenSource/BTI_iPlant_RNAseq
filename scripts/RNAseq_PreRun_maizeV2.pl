@@ -73,6 +73,7 @@ my %tchr=();		## hash of hash store transcript on each chromosome
 ######  adjustable parameter ######
 my $minimal_junc_anchor_length = 10;	## minimal exon junction anchor length that is required to be mapped (This is something that need to be think about......)
 
+my $bwa_app = '/usr/local3/bin/bwa';
 
 ######------- Get options  ---------------######
 
@@ -115,12 +116,12 @@ if ($BWA_CHECK==8)
   if ($Answer eq "Y"|| $Answer eq "y")                                                         
     { 
       print "\n---- Indexing the genome with BWA... ----\n"; 
-      system("bwa index -a is $genome_name");
+      system("$bwa_app index -a is $genome_name");
     } 		
   else {print "Skipping to the next step....\n"; }	                                        
 }			  
 #### if BWA index files are not complete in the genome folder, index the genome			
-else { print "\n---- Indexing the genome with BWA... ----\n"; system("bwa index -a is $genome_name");}							
+else { print "\n---- Indexing the genome with BWA... ----\n"; system("$bwa_app index -a is $genome_name");}							
 				
 			    
 ######---------- Start parsing the annotation ---------------######
@@ -372,7 +373,7 @@ undef %exonlen; undef %exonstart; undef %exonstop=(); undef %tstrand; undef %tch
 
 print "\n---- Indexing the junction file... ----\n\n";			
 		
-system("bwa index -a is $exon_juc_seq");	
+system("$bwa_app index -a is $exon_juc_seq");	
 
 
 
