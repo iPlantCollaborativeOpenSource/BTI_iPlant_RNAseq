@@ -2,10 +2,11 @@
 
 ##    RNAseq_Run.pl
 ##       
-##    Copyright 2011 Lin Wang <lw374@cornell.edu> -- Brutnell Lab  
-##		
-##	   Version 1.5 -- 06/15/2011
-##
+##      Copyright 2011 Lin Wang <lw374@cornell.edu> -- Brutnell Lab  
+##      Copyright 2011 > Vaughn <vaughn@iplantcollaborative.org> -- TACC
+## 
+##      Version 1.5 -- 06/15/2011
+##      Version 1.6 -- 07/19/2011
 ##       
 ##    This program is free software; you can redistribute it and/or modify
 ##    it under the terms of the GNU General Public License as published by
@@ -21,8 +22,12 @@
 ##  This script will use the modified SAM/BAM files produced by BWA and annotation   	
 ##  files to calculate exon coverages.This script was written based on a script originally
 ##  developed by Lalit Ponnala for the study of maize transcriptome (PMID:21037569) 							
-  										
 
+=head1
+
+Usage: RNAseq_Run_threads.pl -mis <allowed number of mismatches> -gap <allowed gap extension> -multi <allowed maximum alignments from a single read> -anno <folder containing outputs from RNAseq_PreRun_maizeV2.pl> -i <sequence reads in FASTQ format> -g <genome FASTA path> -l <read length> -w <one-half junction size>
+
+=cut
 
 use warnings;
 use strict;
@@ -35,7 +40,7 @@ $Config{useithreads} or die('Recompile Perl with threads to run this program.');
 
 my $error = 2; 			## allowed number of mismatches (default: 2)
 my $gap = 2;			## allowed gap extension (default: 2)
-my $multi = 10;			## allowed maxiam alignments from a single read (default: 10)
+my $multi = 10;			## allowed maximum alignments from a single read (default: 10)
 my $ejwidth= 25; 		## width of one side of the junction, total junction sequence length will be twice this much
 
 my $seq;				## input reads in fastq format
@@ -224,7 +229,7 @@ sub usage
     
     -mis	: optional - allowed number of mismatches (default: 2)
     -gap	: optional - allowed gap extension (default: 1)    
-    -multi	: optional - allowed maxiam alignments from a single read (default: 25)
+    -multi	: optional - allowed maximum alignments from a single read (default: 25)
     -s		: optional - the strand that reads will be aligned to (default: both strands): sense/antisense
     -w		: optional - width of one side of the junction, total junction sequence length will be twice this much (default: 25)
     

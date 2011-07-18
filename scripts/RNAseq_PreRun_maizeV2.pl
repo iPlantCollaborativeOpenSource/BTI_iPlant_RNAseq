@@ -3,8 +3,10 @@
 ##      RNAseq_PreRun_maizeV2.pl
 ## 
 ##      Copyright 2011 Lin Wang <lw374@cornell.edu> -- Brutnell Lab  
+##      Copyright 2011 > Vaughn <vaughn@iplantcollaborative.org> -- TACC
 ## 
 ##      Version 1.5 -- 06/15/2011
+##      Version 1.6 -- 07/19/2011
 ## 
 ##      This program is free software; you can redistribute it and/or modify
 ##      it under the terms of the GNU General Public License as published by
@@ -23,9 +25,12 @@
 ##      only once if genome and annotation remain the same for the analysis. 	
 ##      This script was written based on a script originally developed by Lalit		
 ##      Ponnala for the study of maize transcriptome (PMID:21037569) 							
-  										
 
+=head1 RNAseq_PreRun_maizeV2.pl
 
+Usage: RNAseq_PreRun_maizeV2.pl -g <genome FASTA path> -a <GFF3 annotation path> -p <output prefix> -o <output Path> -l <sequence read length> -d <distance used to calculate non-coding region coordinate>
+
+=cut
 
 use warnings;
 use strict;
@@ -36,12 +41,11 @@ use File::Basename;
 use Bio::Seq;    
 use Bio::SeqIO;
 
-
 #--scalar
 my $genome_name;	    	## genome sequence file in FASTA format
 my $genome_path;			## path to where genome sequence is stored
 my $genome_file_type;		## file type of the genome   	
-my $GFF3_annotaiton_input;	## genome annotation file in GFF3 format
+my $gff3_annotation;	## genome annotation file in GFF3 format
 my $GFF3_path;				## path to where annotation and parsed annotation files is stored
 my $output_prefix;			## This will be used as prefix for all output. If this is not given, name of the genome will be used as prefix.
 my $output_prefix1;			## Name of the genome, will be used as prefix if default name is not given.
@@ -66,8 +70,6 @@ my %exonstop=();  	## exon stop postion
 my %tstrand=();		## strand information
 my %tchr=();		## hash of hash store transcript on each chromosome
 
-
-
 ######  adjustable parameter ######
 my $minimal_junc_anchor_length = 10;	## minimal exon junction anchor length that is required to be mapped (This is something that need to be think about......)
 
@@ -77,7 +79,7 @@ my $minimal_junc_anchor_length = 10;	## minimal exon junction anchor length that
 GetOptions
 ( 					
   'g:s'  => \$genome_name,           
-  'a:s'  => \$GFF3_annotaiton_input, 
+  'a:s'  => \$gff3_annotation, 
   'p:s'  => \$output_prefix,         
   'o:s'  => \$output_path,           
   'l:i'  => \$seq_read_length,
@@ -87,10 +89,10 @@ GetOptions
 		  
 ######------- parsing options ---------------######
 
-if($help||!$genome_name||!$GFF3_annotaiton_input||!$seq_read_length||!$dis){ &usage; exit(0);}	## show help message if input are not in correct format, or help option is used 
+if($help||!$genome_name||!$gff3_annotation||!$seq_read_length||!$dis){ &usage; exit(0);}	## show help message if input are not in correct format, or help option is used 
 ($output_prefix1, $genome_path, $genome_file_type) = fileparse($genome_name, qr/\.[^.]*/);	## parse genome input file name
 if (!$output_prefix) { $output_prefix = $output_prefix1; }									## if output_prefix is not give, use the genome name as the prefix instead
-if (!$output_path) {$GFF3_path = dirname($GFF3_annotaiton_input).'/';}						## extract path of annotation file as output folder if specific output path is not given
+if (!$output_path) {$GFF3_path = dirname($gff3_annotation).'/';}						## extract path of annotation file as output folder if specific output path is not given
 else {$GFF3_path = $output_path;}															## if it is given, then use the given path/folder														
 if (!(-d "$GFF3_path")) {system("mkdir $GFF3_path");}										## make folder if it's not already there
 my $half_exon_junc_length = $seq_read_length - $minimal_junc_anchor_length;					## the calculated length of exon junctions to extract 
@@ -144,7 +146,7 @@ open(EXONRECORD,">$exon_coordinate") or die("Cannot create $exon_coordinate"); 	
 open(GTFILE,">$gene_trans") or die("Cannot open $gene_trans");										#### $gene_trans = gene and transcripts association file
 		  
 ### open GFF annotation files, otherwise quit ####
-open(GFFFILE,$GFF3_annotaiton_input) or die("Cannot open $GFF3_annotaiton_input");
+open(GFFFILE,$gff3_annotation) or die("Cannot open $gff3_annotation");
 
 
 ######---------- Start looping through the gff annotation files and parsing the annotation ---------------######
